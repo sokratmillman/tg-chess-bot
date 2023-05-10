@@ -14,7 +14,7 @@ from firebase.db_handlers import database, handle_game_start, handle_game_finish
 from texts import AI_WON_TEXT, COMPUTER_MOVE, DRAW_TEXT, INVALID_MOVE_TEXT, NOT_YOUR_TURN_TEXT, GAME_STARTED_TEXT, WIN_TEXT, WRONG_START_TEXT
 
 
-engine_path = os.getcwd()+"/stockfish_15.1_linux_x64/stockfish-ubuntu-20.04-x86-64"
+engine_path = "./Stockfish/src/stockfish"
 
 stockfish = Stockfish(path=engine_path)
 stockfish.depth = 1
