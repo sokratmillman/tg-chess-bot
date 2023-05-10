@@ -5,3 +5,8 @@
 .idea/modules.xml
 .idea/tg-chess-bot.iml
 .idea/vcs.xml
+env
+/__pycache__
+.env
+**/__pycache__
+creds.json
