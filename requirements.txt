@@ -1,0 +1,6 @@
+cairosvg
+stockfish
+chess
+firebase_admin
+python-dotenv
+aiogram==2.25.1
