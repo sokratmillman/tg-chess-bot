@@ -32,6 +32,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
+        name: Decode creds
+        run: echo ${{secrets.CREDS_ENCODED}} | base64 --decode > creds.json
+      -
+        name: Decode env
+        run: echo ${{secrets.ENV_ENCODED}} | base64 --decode > .env
+      -
         name: Build and push
         uses: docker/build-push-action@v4
         with:
