@@ -37,7 +37,12 @@ async def waiting_handler(message: types.Message, state: FSMContext):
         me = database.get_user(message.from_user.id)
         partner_id = me['status'].split(' ')[-1]
 
+        partner_state = dp.current_state(user=partner_id, chat=partner_id)
+
         handle_game_start(partner_id, str(message.from_user.id))
+
+        await state.set_state(ChessState.PVP_GAME.state)
+        await partner_state.set_state(ChessState.PVP_GAME.state)
 
         await draw_board(message, board, WAIT_OPPONENT_MOVE_TEXT)
         await send_board(bot, partner_id, board, GAME_STARTED_TEXT)

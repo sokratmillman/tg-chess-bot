@@ -70,8 +70,8 @@ async def my_history(message: types.Message):
         await message.answer("No recent games")
         return
 
-    history_list = history.split(", ")
-    result = f"Most current games:\n\n"
+    history_list = history.split(", ")[:-1]
+    result = f"Recent games:\n\n"
     for el in history_list:
         state, id = el.split(" ")[0], el.split(" ")[1]
         if state == "won":

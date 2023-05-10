@@ -89,7 +89,7 @@ async def ai_make_turn(message: types.Message, state: FSMContext):
 
                 if board.is_game_over():
                     if board.is_checkmate():
-                        handle_game_finish(game_id, 'loss', 'ai')
+                        handle_game_finish(game_id, 'win', 'ai')
                         await message.answer(AI_WON_TEXT)
                     else:
                         await message.answer(DRAW_TEXT)
