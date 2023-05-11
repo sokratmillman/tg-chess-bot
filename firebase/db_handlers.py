@@ -10,6 +10,33 @@ def handle_game_request(uid_from, uid_to):
         "status": f'CONNECTING_WITH {uid_from}'
     })
 
+def handle_getting_pending():
+    all_users = database.get_all_users()
+    if all_users is None or isinstance(all_users, list):
+        return
+    
+    pending_users = dict(filter(lambda x: x[1]['status'].split(" ")[0]=="CONNECTING" and x[1]!="0",
+                                all_users.items()))
+    pending_users_ids = pending_users.keys()
+
+    return pending_users_ids
+
+def handle_getting_playing():
+    all_games = database.get_all_games()
+
+    if all_games is None:
+        return
+
+    playing_users_pairs = []
+
+    for game in all_games:
+        white = all_games[game]['white']
+        black = all_games[game]['black']
+        pair = (white, black)
+        playing_users_pairs.append(pair)
+
+    return playing_users_pairs
+
 def handle_game_reject(uid_from, uid_to):
     database.update_user(uid=uid_from, changes_obj={
             "status": "AVAILABLE"
@@ -96,7 +123,7 @@ def handle_loss_for_user(uid, partner_id="AI"):
 
 def handle_leaderboard_recalc():
     users = database.get_all_users()
-    users_with_wins = dict(filter(lambda x: x[1]['stats']['wins'], users.items()))
+    users_with_wins = dict(filter(lambda x: x[1]['stats']['wins']>0, users.items()))
     sorted_items = sorted(users_with_wins.items(), 
                           key=lambda x: x[1]['stats']['wins'], 
                           reverse=True)[:10]

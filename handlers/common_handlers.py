@@ -2,8 +2,9 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from const import AVAILABLE
 
-from firebase.db_handlers import database, handle_game_finish
+from firebase.db_handlers import database, handle_game_finish, handle_getting_playing, handle_getting_pending
 from bot import bot, dp
+from handlers.state import ChessState
 from texts import GAME_CANCELLED_TEXT, HELP_TEXT, NO_GAME_YET_TEXT, YOUR_ID_TEXT
 
 async def send_welcome(message: types.Message):
@@ -93,6 +94,27 @@ async def my_stats(message: types.Message):
     result += f"% of wins: {stats['% of wins']}"
     
     await message.answer(result)
+
+async def on_startup():
+    playing_ids_pairs = handle_getting_playing()
+    pending_ids = handle_getting_pending()
+
+    if pending_ids is not None:
+        for uid in pending_ids:
+            state = dp.current_state(user=uid, chat=uid)
+            await state.set_state(ChessState.WAITING.state)
+            
+    if playing_ids_pairs is not None:
+        for pair in playing_ids_pairs:
+            if pair[0]!="0" and pair[1]!="0":
+                state = dp.current_state(user=pair[0], chat=pair[0])
+                partner_state = dp.current_state(user=pair[1], chat=pair[1])
+                await state.set_state(ChessState.PVP_GAME.state)
+                await partner_state.set_state(ChessState.PVP_GAME.state)
+            else:
+                player_id = pair[0] if pair[0]!="0" else pair[1]
+                state = dp.current_state(user=player_id, chat=player_id)
+                await state.set_state(ChessState.AI_GAME.state)
 
 def register_common_handlers(dp: Dispatcher):
     dp.register_message_handler(send_welcome, commands="start")
