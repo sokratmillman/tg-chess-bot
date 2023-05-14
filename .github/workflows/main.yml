@@ -19,6 +19,7 @@ jobs:
         with:
           source: "./"
           mypy-options: "--ignore-missing-imports --show-error-codes"
+          pylint-options: "--rcfile=.pylintrc"
           isort-options: "-w 100"
 
         
