@@ -11,6 +11,7 @@ on:
 jobs:
 
   tests:
+    - uses: actions/checkout@v2
     - name: Set up Python 3.10.6
     uses: actions/setup-python@v1
     with:
