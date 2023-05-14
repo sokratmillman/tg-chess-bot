@@ -4,10 +4,10 @@ from firebase_admin import db
 import chess
 
 class MyDatabase:
-    def __init__(self, cred_path, db_URL):
+    def __init__(self, cred_path, db_url):
         creds = credentials.Certificate(cred_path)
         firebase_admin.initialize_app(creds, options={
-            'databaseURL':  db_URL,
+            'databaseURL':  db_url,
         })
 
         current_users = db.reference().child("users").get()
@@ -34,7 +34,7 @@ class MyDatabase:
                 }
             }
         })
-        
+
         self.USERS = db.reference("users")
         self.ACTIVE_GAMES = db.reference("active_games")
         self.LEADERBOARD = db.reference("leaderboard")
@@ -45,10 +45,10 @@ class MyDatabase:
             'active_games': {},
             'leaderboard': {}
         })
-    
+
     def get_all_users(self):
         return self.USERS.get()
-    
+
     def create_user(self, uid):
         ref = self.USERS
         if ref.child(str(uid)).get() is None:
@@ -64,7 +64,7 @@ class MyDatabase:
                     '% of wins': 0,
                 }
             }})
-    
+
     def update_user(self, uid, changes_obj):
         ref = self.USERS.child(str(uid))
         if ref.get() is None:
@@ -74,7 +74,7 @@ class MyDatabase:
     def get_user(self, uid):
         ref = self.USERS.child(str(uid))
         return ref.get()
-    
+
     def create_game(self, uid_from, uid_to):
         ref = self.ACTIVE_GAMES
         board_str = chess.Board().fen()
@@ -88,38 +88,41 @@ class MyDatabase:
 
         game_id = game_id_ref.key
         return game_id
-    
+
     def update_game(self, game_id, changes_obj):
         ref = self.ACTIVE_GAMES.child(game_id)
         if ref.get() is None:
             return
         ref.update(changes_obj)
-    
+
     def get_game(self, game_id):
         ref = self.ACTIVE_GAMES.child(game_id)
         return ref.get()
-    
+
     def get_all_games(self):
         return self.ACTIVE_GAMES.get()
 
     def delete_game(self, game_id):
         ref = self.ACTIVE_GAMES.child(game_id)
         ref.delete()
-    
+
     def init_leaderboard(self, first_leader, second_leader=None):
         ref = self.LEADERBOARD
-        ref.update({"1st": first_leader} if second_leader is None else {"1st": first_leader, "2nd":second_leader})
-    
+        if second_leader is None:
+            ref.update({"1st": first_leader})
+        else:
+            ref.update({"1st": first_leader, "2nd":second_leader})
+
     def update_leaderboard(self, changes_obj):
         ref = self.LEADERBOARD
         ref.update(changes_obj)
 
     def get_leaderboard(self):
         return self.LEADERBOARD.get()
-    
+
     def get_user_stats(self, uid):
         return self.get_user(uid)['stats']
-    
+
     def get_user_history(self, uid):
         return self.get_user(uid)['history']
     

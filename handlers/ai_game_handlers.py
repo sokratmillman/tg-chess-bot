@@ -2,21 +2,22 @@ from aiogram import  Dispatcher, types
 from aiogram.dispatcher import FSMContext
 import chess
 import chess.svg
-import os
-from const import AVAILABLE
-from handlers.state import ChessState
 from stockfish import Stockfish
 
+from handlers.state import ChessState
+
 from libs.draw_board import draw_board
-from bot import bot, dp
 
 from firebase.db_handlers import database, handle_game_start, handle_game_finish
-from texts import AI_WON_TEXT, COMPUTER_MOVE, DRAW_TEXT, INVALID_MOVE_TEXT, NOT_YOUR_TURN_TEXT, GAME_STARTED_TEXT, WIN_TEXT, WRONG_START_TEXT
+
+from texts import (
+    AI_WON_TEXT, COMPUTER_MOVE, DRAW_TEXT, INVALID_MOVE_TEXT,
+    NOT_YOUR_TURN_TEXT, GAME_STARTED_TEXT,
+    WIN_TEXT, WRONG_START_TEXT,
+)
 
 
-engine_path = "./Stockfish/src/stockfish"
-
-stockfish = Stockfish(path=engine_path)
+stockfish = Stockfish(path="./Stockfish/src/stockfish")
 stockfish.depth = 1
 
 async def start_ai_game(message: types.Message, state: FSMContext):
@@ -30,7 +31,7 @@ async def start_ai_game(message: types.Message, state: FSMContext):
         return
 
     await draw_board(message, board)
-    
+
     await message.answer(GAME_STARTED_TEXT)
     await state.set_state(ChessState.AI_GAME.state)
 
@@ -42,15 +43,13 @@ async def ai_make_turn(message: types.Message, state: FSMContext):
         await state.finish()
         return
     game_id = user['current_game']
-    if (game_id == '-1'):
+    if game_id == '-1':
         # no game in progress, ignore
         await state.finish()
         return
     game = database.get_game(game_id)
-    white_id = game['white']
-    black_id = game['black']
 
-    if (game['current_turn'] != str(message.from_user.id)):
+    if game['current_turn'] != str(message.from_user.id):
         await message.answer(NOT_YOUR_TURN_TEXT)
         return
 
@@ -74,31 +73,31 @@ async def ai_make_turn(message: types.Message, state: FSMContext):
             await state.finish()
 
         else:
-                partner_id = message.from_user.id
+            partner_id = message.from_user.id
 
-                board = chess.Board(board.fen())
-                board.turn = chess.BLACK
-                
-                stockfish.set_fen_position(board.fen())
+            board = chess.Board(board.fen())
+            board.turn = chess.BLACK
 
-                best_move = stockfish.get_best_move()
-                board.push_san(best_move)
+            stockfish.set_fen_position(board.fen())
 
-                await message.answer(COMPUTER_MOVE.format(best_move))
-                await draw_board(message, board)
+            best_move = stockfish.get_best_move()
+            board.push_san(best_move)
 
-                if board.is_game_over():
-                    if board.is_checkmate():
-                        handle_game_finish(game_id, 'win', 'ai')
-                        await message.answer(AI_WON_TEXT)
-                    else:
-                        await message.answer(DRAW_TEXT)
-                    await state.finish()
+            await message.answer(COMPUTER_MOVE.format(best_move))
+            await draw_board(message, board)
 
-                database.update_game(game_id, {"current_turn": str(partner_id), "board": board.fen()})
+            if board.is_game_over():
+                if board.is_checkmate():
+                    handle_game_finish(game_id, 'win', 'ai')
+                    await message.answer(AI_WON_TEXT)
+                else:
+                    await message.answer(DRAW_TEXT)
+                await state.finish()
+
+            database.update_game(game_id, {"current_turn": str(partner_id), "board": board.fen()})
     except Exception:
         await message.answer(INVALID_MOVE_TEXT)
 
-def register_ai_game_handlers(dp: Dispatcher):
-    dp.register_message_handler(start_ai_game, commands="start_ai_game")
-    dp.register_message_handler(ai_make_turn, state=ChessState.AI_GAME)
+def register_ai_game_handlers(dispatcher: Dispatcher):
+    dispatcher.register_message_handler(start_ai_game, commands="start_ai_game")
+    dispatcher.register_message_handler(ai_make_turn, state=ChessState.AI_GAME)

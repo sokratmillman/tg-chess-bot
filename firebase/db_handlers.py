@@ -1,5 +1,5 @@
 from firebase.db_init import database
-from firebase.db_utils import *
+from firebase.db_utils import generate_new_history
 
 def handle_game_request(uid_from, uid_to):
     database.update_user(uid=uid_from, changes_obj={
@@ -13,8 +13,8 @@ def handle_game_request(uid_from, uid_to):
 def handle_getting_pending():
     all_users = database.get_all_users()
     if all_users is None or isinstance(all_users, list):
-        return
-    
+        return None
+
     pending_users = dict(filter(lambda x: x[1]['status'].split(" ")[0]=="CONNECTING" and x[1]!="0",
                                 all_users.items()))
     pending_users_ids = pending_users.keys()
@@ -25,7 +25,7 @@ def handle_getting_playing():
     all_games = database.get_all_games()
 
     if all_games is None:
-        return
+        return None
 
     playing_users_pairs = []
 
@@ -63,7 +63,7 @@ def handle_draw_for_user(uid, partner_id="AI"):
 
     new_stats = {
         "wins": user_wins,
-        "losses": user_stats['losses'],
+        "losses": user_losses,
         "draws": user_draws,
         "total games": user_total_games,
         "% of wins": user_ratio
@@ -124,8 +124,8 @@ def handle_loss_for_user(uid, partner_id="AI"):
 def handle_leaderboard_recalc():
     users = database.get_all_users()
     users_with_wins = dict(filter(lambda x: x[1]['stats']['wins']>0, users.items()))
-    sorted_items = sorted(users_with_wins.items(), 
-                          key=lambda x: x[1]['stats']['wins'], 
+    sorted_items = sorted(users_with_wins.items(),
+                          key=lambda x: x[1]['stats']['wins'],
                           reverse=True)[:10]
     leaders = [item[0] for item in sorted_items]
     leaderboard = {f"{i+1}th": leaders[i] for i in range(len(leaders))}
@@ -167,13 +167,13 @@ def handle_ai_finish(game_id, status, winner_color=None):
             handle_win_for_user(player_uid)
         else:
             handle_loss_for_user(player_uid)
-    
+
     database.update_user(player_uid, {"status": "AVAILABLE"})
 
-def handle_game_finish(game_id, status, type, winner_color=None):
-    if type=="ai":
+def handle_game_finish(game_id, status, game_type, winner_color=None):
+    if game_type=="ai":
         handle_ai_finish(game_id, status, winner_color)
-    elif type=="pvp":
+    elif game_type=="pvp":
         handle_pvp_finish(game_id, status, winner_color)
 
     handle_leaderboard_recalc()

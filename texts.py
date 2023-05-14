@@ -17,8 +17,8 @@ MY_STATS_COMMAND = 'Show my statistics'
 HELP_TEXT = """Welcome to ChessBot 👋
 
 There are two modes:
-\* Playing with a friend
-\* Playing with a bot
+ Playing with a friend
+ Playing with a bot
 
 Playing with a friend:
 1. To play with a friend, your friend must press the `/start` command in the bot to register
@@ -31,7 +31,8 @@ It is enough to run the command `/start_ai_game` and the game with the bot will 
 
 How to make moves:
 To make a move, write in this form _[start position][final position]_
-For example, to make the central pawn move forward in the starting position, you need to write to the chat _e2e4_"""
+For example, to make the central pawn move forward
+in the starting position, you need to write to the chat _e2e4_"""
 
 YOUR_ID_TEXT = 'Your id is `{}`'
 NO_GAME_YET_TEXT = 'No game started yet'

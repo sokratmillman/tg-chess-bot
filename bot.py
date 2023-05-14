@@ -1,8 +1,9 @@
+from os import environ as env
+
 from aiogram import Bot
 from aiogram import Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from dotenv import load_dotenv
-from os import environ as env
 
 load_dotenv()
 
