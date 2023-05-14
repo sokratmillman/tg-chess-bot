@@ -8,4 +8,4 @@ load_dotenv()
 db_url = env['DB_URL']
 cred_path = env['DB_KEY_PATH']
 
-database = MyDatabase(cred_path=cred_path, db_URL=db_url)
+database = MyDatabase(cred_path=cred_path, db_url=db_url)
