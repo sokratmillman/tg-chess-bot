@@ -63,7 +63,7 @@ async def leaderboard(message: types.Message):
         await message.answer("No leaders yet")
         return
 
-    result = f"Top-{len(leaders)} players:"
+    result = f"Top-{len(leaders)} players:\n\n"
     for key in leaders:
         result += f"{key}. {leaders[key]}\n"
     await message.answer(result)
@@ -80,7 +80,7 @@ async def my_history(message: types.Message):
     result = "Recent games:\n\n"
     for rec_game in history_list:
         state, u_id = rec_game.split(" ")[0], rec_game.split(" ")[1]
-        if state == "won":
+        if state == "win":
             result += f"You won {u_id}\n"
         elif state == "loss":
             result += f"You lost to {u_id}\n"

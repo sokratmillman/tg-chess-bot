@@ -149,9 +149,10 @@ def handle_pvp_finish(game_id, status, winner_color=None):
         loser_id = white_uid if winner_color=="black" else black_uid
         handle_win_for_user(winner_id, loser_id)
         handle_loss_for_user(loser_id, winner_id)
+        database.delete_game(game_id)
 
-    database.update_user(black_uid, {"status": "AVAILABLE"})
-    database.update_user(white_uid, {"status": "AVAILABLE"})
+    database.update_user(black_uid, {"current_game": "-1", "status": "AVAILABLE"})
+    database.update_user(white_uid, {"current_game": "-1", "status": "AVAILABLE"})
 
 def handle_ai_finish(game_id, status, winner_color=None):
     game = database.get_game(game_id)
@@ -168,7 +169,8 @@ def handle_ai_finish(game_id, status, winner_color=None):
         else:
             handle_loss_for_user(player_uid)
 
-    database.update_user(player_uid, {"status": "AVAILABLE"})
+    database.update_user(player_uid, {"current_game": "-1", "status": "AVAILABLE"})
+    database.delete_game(game_id)
 
 def handle_game_finish(game_id, status, game_type, winner_color=None):
     if game_type=="ai":
