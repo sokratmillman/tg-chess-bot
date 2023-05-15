@@ -11,6 +11,7 @@ CANCEL_GAME_COMMAND = 'Cancel Game'
 LEADERBOARD_COMMAND = 'Show table of the most winning players'
 MY_HISTORY_COMMAND = 'Show most recent games'
 MY_STATS_COMMAND = 'Show my statistics'
+MATCH_STATS_COMMAND = 'Show current AI match evaluation'
 
 
 
@@ -28,6 +29,7 @@ Playing with a friend:
 
 Playing with a bot:
 It is enough to run the command `/start_ai_game` and the game with the bot will begin
+During game against a bot you can get analysis of the game with `/match_stats` command
 
 How to make moves:
 To make a move, write in this form _[start position][final position]_

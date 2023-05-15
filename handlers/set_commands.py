@@ -6,7 +6,7 @@ from texts import (
     HELP_COMMAND, START_AI_GAME_COMMAND,
     START_COMMAND, START_PVP_GAME_COMMAND,
     LEADERBOARD_COMMAND, MY_HISTORY_COMMAND,
-    MY_STATS_COMMAND,
+    MY_STATS_COMMAND, MATCH_STATS_COMMAND
 )
 
 async def set_commands(bot: Bot):
@@ -20,5 +20,6 @@ async def set_commands(bot: Bot):
         BotCommand(command="/my_stats", description=MY_STATS_COMMAND),
         BotCommand(command="/my_history", description=MY_HISTORY_COMMAND),
         BotCommand(command="/leaderboard", description=LEADERBOARD_COMMAND),
+        BotCommand(command="/match_stats", description=MATCH_STATS_COMMAND)
     ]
     await bot.set_my_commands(commands)
